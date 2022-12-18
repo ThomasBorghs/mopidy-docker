@@ -4,9 +4,10 @@ USER_ID=${PUID:-9001}
 GROUP_ID=${PGID:-9001}
 
 echo "Starting with UID: $USER_ID, GID: $GROUP_ID"
-useradd -u $USER_ID -o -m mopidy
-groupmod -g $GROUP_ID mopidy
+groupadd -g $GROUP_ID mopidy
+useradd -u $USER_ID -g $GROUP_ID -o -m mopidy
 export HOME=/home/mopidy
+sh -c 'echo "mopidy ALL=NOPASSWD: /usr/local/lib/python3.7/dist-packages/mopidy_iris/system.sh" >> /etc/sudoers'
 
 # Copy config if it does not already exist
 if [ ! -f /home/mopidy/.config/mopidy/mopidy.conf ]; then

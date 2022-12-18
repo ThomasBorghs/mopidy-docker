@@ -15,6 +15,7 @@ RUN wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     tzdata \
+    iputils-ping \
     sudo \
     gosu \
     procps \
@@ -48,8 +49,13 @@ RUN pip3 install \
     Mopidy-Spotify \
     Mopidy-Iris
 
-COPY mopidy.conf /mopidy_default.conf
 
+#RUN useradd -ms /bin/bash mopidy
+#RUN sh -c 'echo "mopidy ALL=NOPASSWD: /usr/local/lib/python3.7/dist-packages/mopidy_iris/system.sh, /usr/bin/apt*" >> /etc/sudoers'
+RUN touch /IS_CONTAINER
+RUN sed -i 's+--config .*mopidy.conf+--config /home/mopidy/.config/mopidy/mopidy.conf+g' /usr/local/lib/python3.7/dist-packages/mopidy_iris/system.sh  # Fixes the silly iris script with built-in paths
+
+COPY mopidy.conf /mopidy_default.conf
 COPY mopidy.sh /usr/local/bin/mopidy.sh
 RUN chmod +x /usr/local/bin/mopidy.sh
 
